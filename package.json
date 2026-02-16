@@ -1,0 +1,28 @@
+{
+  "name": "cubo-3d-interactivo",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Aplicación 3D interactiva con Three.js y arquitectura modular",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "threejs",
+    "3d",
+    "interactive",
+    "cube",
+    "raycasting",
+    "hypercube",
+    "tesseract"
+  ],
+  "author": "",
+  "license": "MIT"
+}

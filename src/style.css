@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+    background: #ffffff;
+    color: #111111;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* Panels base style */
+#info-panel,
+.controls,
+.legend {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    padding: 20px;
+    z-index: 100;
+}
+
+/* Positions */
+#info-panel {
+    top: 24px;
+    left: 24px;
+    max-width: 360px;
+}
+
+.legend {
+    top: 24px;
+    right: 24px;
+    padding: 16px;
+}
+
+.controls {
+    bottom: 24px;
+    left: 24px;
+    padding: 16px;
+}
+
+/* Typography */
+#info-panel h2,
+.legend h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+}
+
+#info-panel p {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.6;
+    margin: 6px 0;
+}
+
+/* Status */
+.status {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #333;
+}
+
+/* Data display */
+#data-display {
+    margin-top: 14px;
+    padding: 14px;
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    display: none;
+}
+
+#data-display h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+#data-display .data-item {
+    font-size: 12px;
+    color: #555;
+    margin: 4px 0;
+}
+
+/* Legend */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 12px;
+    color: #333;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    margin-right: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Buttons */
+.controls button {
+    margin: 4px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #111111;
+    color: #ffffff;
+    border: 1px solid #111111;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.controls button:hover {
+    background: #ffffff;
+    color: #111111;
+}
+
+.controls button:active {
+    transform: scale(0.97);
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background: #111111;
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 6px;
+    pointer-events: none;
+    display: none;
+    z-index: 1000;
+    border: 1px solid #222;
+}

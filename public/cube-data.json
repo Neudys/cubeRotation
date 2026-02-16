@@ -1,0 +1,306 @@
+{
+  "cube": {
+    "vertices": [
+      {
+        "id": 0,
+        "name": "Vértice A",
+        "position": [-1, -1, -1],
+        "data": {
+          "tipo": "Esquina inferior frontal izquierda",
+          "conexiones": 3,
+          "valor": 42,
+          "categoria": "Estructural",
+          "peso": 125,
+          "temperatura": 22.5,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 1,
+        "name": "Vértice B",
+        "position": [1, -1, -1],
+        "data": {
+          "tipo": "Esquina inferior frontal derecha",
+          "conexiones": 3,
+          "valor": 87,
+          "categoria": "Estructural",
+          "peso": 130,
+          "temperatura": 23.1,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 2,
+        "name": "Vértice C",
+        "position": [1, 1, -1],
+        "data": {
+          "tipo": "Esquina superior frontal derecha",
+          "conexiones": 3,
+          "valor": 156,
+          "categoria": "Crítico",
+          "peso": 142,
+          "temperatura": 25.3,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 3,
+        "name": "Vértice D",
+        "position": [-1, 1, -1],
+        "data": {
+          "tipo": "Esquina superior frontal izquierda",
+          "conexiones": 3,
+          "valor": 234,
+          "categoria": "Crítico",
+          "peso": 138,
+          "temperatura": 24.8,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 4,
+        "name": "Vértice E",
+        "position": [-1, -1, 1],
+        "data": {
+          "tipo": "Esquina inferior trasera izquierda",
+          "conexiones": 3,
+          "valor": 321,
+          "categoria": "Estructural",
+          "peso": 128,
+          "temperatura": 22.9,
+          "estado": "Mantenimiento"
+        }
+      },
+      {
+        "id": 5,
+        "name": "Vértice F",
+        "position": [1, -1, 1],
+        "data": {
+          "tipo": "Esquina inferior trasera derecha",
+          "conexiones": 3,
+          "valor": 412,
+          "categoria": "Estructural",
+          "peso": 135,
+          "temperatura": 23.7,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 6,
+        "name": "Vértice G",
+        "position": [1, 1, 1],
+        "data": {
+          "tipo": "Esquina superior trasera derecha",
+          "conexiones": 3,
+          "valor": 578,
+          "categoria": "Crítico",
+          "peso": 145,
+          "temperatura": 26.1,
+          "estado": "Activo"
+        }
+      },
+      {
+        "id": 7,
+        "name": "Vértice H",
+        "position": [-1, 1, 1],
+        "data": {
+          "tipo": "Esquina superior trasera izquierda",
+          "conexiones": 3,
+          "valor": 689,
+          "categoria": "Crítico",
+          "peso": 140,
+          "temperatura": 25.5,
+          "estado": "Activo"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "from": 0,
+        "to": 1,
+        "data": {
+          "nombre": "Conexión A-B",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5000,
+          "fecha_instalacion": "2024-01-15",
+          "ultima_inspeccion": "2024-12-10",
+          "eficiencia": 98.5
+        }
+      },
+      {
+        "id": 1,
+        "from": 1,
+        "to": 2,
+        "data": {
+          "nombre": "Conexión B-C",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5200,
+          "fecha_instalacion": "2024-01-15",
+          "ultima_inspeccion": "2024-12-10",
+          "eficiencia": 97.8
+        }
+      },
+      {
+        "id": 2,
+        "from": 2,
+        "to": 3,
+        "data": {
+          "nombre": "Conexión C-D",
+          "longitud": 2.0,
+          "resistencia": "Media",
+          "material": "Aluminio reforzado",
+          "carga_maxima": 4500,
+          "fecha_instalacion": "2024-02-01",
+          "ultima_inspeccion": "2024-11-20",
+          "eficiencia": 95.2
+        }
+      },
+      {
+        "id": 3,
+        "from": 3,
+        "to": 0,
+        "data": {
+          "nombre": "Conexión D-A",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5100,
+          "fecha_instalacion": "2024-01-15",
+          "ultima_inspeccion": "2024-12-10",
+          "eficiencia": 98.1
+        }
+      },
+      {
+        "id": 4,
+        "from": 4,
+        "to": 5,
+        "data": {
+          "nombre": "Conexión E-F",
+          "longitud": 2.0,
+          "resistencia": "Media",
+          "material": "Aluminio reforzado",
+          "carga_maxima": 4600,
+          "fecha_instalacion": "2024-02-01",
+          "ultima_inspeccion": "2024-11-20",
+          "eficiencia": 94.8
+        }
+      },
+      {
+        "id": 5,
+        "from": 5,
+        "to": 6,
+        "data": {
+          "nombre": "Conexión F-G",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5300,
+          "fecha_instalacion": "2024-01-20",
+          "ultima_inspeccion": "2024-12-05",
+          "eficiencia": 99.1
+        }
+      },
+      {
+        "id": 6,
+        "from": 6,
+        "to": 7,
+        "data": {
+          "nombre": "Conexión G-H",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5250,
+          "fecha_instalacion": "2024-01-20",
+          "ultima_inspeccion": "2024-12-05",
+          "eficiencia": 98.7
+        }
+      },
+      {
+        "id": 7,
+        "from": 7,
+        "to": 4,
+        "data": {
+          "nombre": "Conexión H-E",
+          "longitud": 2.0,
+          "resistencia": "Media",
+          "material": "Aluminio reforzado",
+          "carga_maxima": 4700,
+          "fecha_instalacion": "2024-02-05",
+          "ultima_inspeccion": "2024-11-25",
+          "eficiencia": 95.6
+        }
+      },
+      {
+        "id": 8,
+        "from": 0,
+        "to": 4,
+        "data": {
+          "nombre": "Conexión A-E",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5150,
+          "fecha_instalacion": "2024-01-18",
+          "ultima_inspeccion": "2024-12-08",
+          "eficiencia": 97.9
+        }
+      },
+      {
+        "id": 9,
+        "from": 1,
+        "to": 5,
+        "data": {
+          "nombre": "Conexión B-F",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5180,
+          "fecha_instalacion": "2024-01-18",
+          "ultima_inspeccion": "2024-12-08",
+          "eficiencia": 98.3
+        }
+      },
+      {
+        "id": 10,
+        "from": 2,
+        "to": 6,
+        "data": {
+          "nombre": "Conexión C-G",
+          "longitud": 2.0,
+          "resistencia": "Media",
+          "material": "Aluminio reforzado",
+          "carga_maxima": 4800,
+          "fecha_instalacion": "2024-02-10",
+          "ultima_inspeccion": "2024-11-30",
+          "eficiencia": 96.1
+        }
+      },
+      {
+        "id": 11,
+        "from": 3,
+        "to": 7,
+        "data": {
+          "nombre": "Conexión D-H",
+          "longitud": 2.0,
+          "resistencia": "Alta",
+          "material": "Acero inoxidable",
+          "carga_maxima": 5220,
+          "fecha_instalacion": "2024-01-22",
+          "ultima_inspeccion": "2024-12-12",
+          "eficiencia": 98.9
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-02-16",
+    "description": "Estructura 3D interactiva de cubo con datos de vértices y aristas",
+    "author": "Sistema Interactivo 3D"
+  }
+}
