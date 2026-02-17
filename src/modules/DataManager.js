@@ -7,18 +7,15 @@ export class DataManager {
         this.data = null;
     }
 
-    /**
-     * Carga datos desde un archivo JSON externo
-     * @param {string} url - URL del archivo JSON
-     * @returns {Promise<Object>} Datos del cubo
-     */
     async loadFromJSON(url) {
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             this.data = await response.json();
+            if (!this.data?.cube?.edges?.[0]?.vessel) {
+                console.warn('JSON externo sin estructura válida, usando datos por defecto');
+                return this.loadDefaultData();
+            }
             return this.data;
         } catch (error) {
             console.warn('Error cargando JSON, usando datos por defecto:', error);
@@ -26,148 +23,152 @@ export class DataManager {
         }
     }
 
-    /**
-     * Carga datos inline (para cuando ya tienes el objeto)
-     * @param {Object} data - Objeto con datos del cubo
-     */
     loadInline(data) {
         this.data = data;
         return this.data;
     }
 
-    /**
-     * Datos por defecto (fallback)
-     * @returns {Object} Estructura de datos del cubo
-     */
     loadDefaultData() {
         this.data = {
             cube: {
                 vertices: [
-                    { 
-                        id: 0, 
-                        name: "Vértice A", 
-                        position: [-1, -1, -1], 
-                        data: { 
-                            tipo: "Esquina inferior frontal izquierda",
-                            conexiones: 3, 
-                            valor: 42,
-                            categoria: "Estructural",
-                            peso: 125
-                        }
+                    {
+                        id: 0,
+                        name: "Shou Yang Ming",
+                        position: [-1, 1, -1],
+                        symbol: "♂",
+                        number: "33",
+                        data: { canal: "Intestino Grueso", elemento: "Metal", numero: "33", descripcion: "Meridiano Mano Yang Brillante" }
                     },
-                    { 
-                        id: 1, 
-                        name: "Vértice B", 
-                        position: [1, -1, -1], 
-                        data: { 
-                            tipo: "Esquina inferior frontal derecha",
-                            conexiones: 3, 
-                            valor: 87,
-                            categoria: "Estructural",
-                            peso: 130
-                        }
+                    {
+                        id: 1,
+                        name: "Zu Yang Ming",
+                        position: [1, 1, -1],
+                        symbol: "II",
+                        number: "64",
+                        data: { canal: "Estómago", elemento: "Tierra", numero: "64", descripcion: "Meridiano Pie Yang Brillante" }
                     },
-                    { 
-                        id: 2, 
-                        name: "Vértice C", 
-                        position: [1, 1, -1], 
-                        data: { 
-                            tipo: "Esquina superior frontal derecha",
-                            conexiones: 3, 
-                            valor: 156,
-                            categoria: "Crítico",
-                            peso: 142
-                        }
+                    {
+                        id: 2,
+                        name: "Shou Shao Yin",
+                        position: [-1, 1, 1],
+                        symbol: "⊙",
+                        number: "5",
+                        data: { canal: "Corazón", elemento: "Fuego", numero: "5", descripcion: "Meridiano Mano Menor Yin" }
                     },
-                    { 
-                        id: 3, 
-                        name: "Vértice D", 
-                        position: [-1, 1, -1], 
-                        data: { 
-                            tipo: "Esquina superior frontal izquierda",
-                            conexiones: 3, 
-                            valor: 234,
-                            categoria: "Crítico",
-                            peso: 138
-                        }
+                    {
+                        id: 3,
+                        name: "Shou Tai Yin",
+                        position: [1, 1, 1],
+                        symbol: "♐",
+                        number: "9",
+                        data: { canal: "Pulmón", elemento: "Metal", numero: "9", descripcion: "Meridiano Mano Mayor Yin" }
                     },
-                    { 
-                        id: 4, 
-                        name: "Vértice E", 
-                        position: [-1, -1, 1], 
-                        data: { 
-                            tipo: "Esquina inferior trasera izquierda",
-                            conexiones: 3, 
-                            valor: 321,
-                            categoria: "Estructural",
-                            peso: 128
-                        }
+                    {
+                        id: 4,
+                        name: "Zu Jue Yin",
+                        position: [-1, -1, -1],
+                        symbol: "♓",
+                        number: "40-4",
+                        data: { canal: "Hígado", elemento: "Madera", numero: "40-4", descripcion: "Meridiano Pie Jue Yin" }
                     },
-                    { 
-                        id: 5, 
-                        name: "Vértice F", 
-                        position: [1, -1, 1], 
-                        data: { 
-                            tipo: "Esquina inferior trasera derecha",
-                            conexiones: 3, 
-                            valor: 412,
-                            categoria: "Estructural",
-                            peso: 135
-                        }
+                    {
+                        id: 5,
+                        name: "Shou Shao Yang",
+                        position: [1, -1, -1],
+                        symbol: "♑",
+                        number: "27-9",
+                        data: { canal: "Triple Calentador", elemento: "Fuego", numero: "27-9", descripcion: "Meridiano Mano Menor Yang" }
                     },
-                    { 
-                        id: 6, 
-                        name: "Vértice G", 
-                        position: [1, 1, 1], 
-                        data: { 
-                            tipo: "Esquina superior trasera derecha",
-                            conexiones: 3, 
-                            valor: 578,
-                            categoria: "Crítico",
-                            peso: 145
-                        }
+                    {
+                        id: 6,
+                        name: "Zu Shao Yin",
+                        position: [-1, -1, 1],
+                        symbol: "♏",
+                        number: "55-10-1",
+                        data: { canal: "Riñón", elemento: "Agua", numero: "55-10-1", descripcion: "Meridiano Pie Menor Yin" }
                     },
-                    { 
-                        id: 7, 
-                        name: "Vértice H", 
-                        position: [-1, 1, 1], 
-                        data: { 
-                            tipo: "Esquina superior trasera izquierda",
-                            conexiones: 3, 
-                            valor: 689,
-                            categoria: "Crítico",
-                            peso: 140
-                        }
+                    {
+                        id: 7,
+                        name: "Shou Jue Yin",
+                        position: [1, -1, 1],
+                        symbol: "⊕",
+                        number: "8",
+                        data: { canal: "Pericardio", elemento: "Fuego", numero: "8", descripcion: "Meridiano Mano Jue Yin" }
                     }
                 ],
                 edges: [
-                    { id: 0, from: 0, to: 1, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 1, from: 1, to: 2, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 2, from: 2, to: 3, data: { longitud: 2.0, resistencia: "Media", material: "Aluminio reforzado" }},
-                    { id: 3, from: 3, to: 0, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 4, from: 4, to: 5, data: { longitud: 2.0, resistencia: "Media", material: "Aluminio reforzado" }},
-                    { id: 5, from: 5, to: 6, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 6, from: 6, to: 7, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 7, from: 7, to: 4, data: { longitud: 2.0, resistencia: "Media", material: "Aluminio reforzado" }},
-                    { id: 8, from: 0, to: 4, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 9, from: 1, to: 5, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }},
-                    { id: 10, from: 2, to: 6, data: { longitud: 2.0, resistencia: "Media", material: "Aluminio reforzado" }},
-                    { id: 11, from: 3, to: 7, data: { longitud: 2.0, resistencia: "Alta", material: "Acero inoxidable" }}
+                    // Aristas cara superior
+                    {
+                        id: 0, from: 0, to: 1,
+                        vessel: "Yang Wei Mai", trigram: "☰△", number: "4",
+                        data: { vaso: "Yang Wei Mai", trigrama: "☰△", numero: "4", funcion: "Vincula todos los meridianos Yang" }
+                    },
+                    {
+                        id: 1, from: 0, to: 2,
+                        vessel: "Zu Tai Yin", trigram: "≡▽", number: "45-9",
+                        data: { vaso: "Zu Tai Yin", trigrama: "≡▽", numero: "45-9", funcion: "Meridiano Bazo-Páncreas" }
+                    },
+                    {
+                        id: 2, from: 1, to: 3,
+                        vessel: "Shou Tai Yang", trigram: "≡☵", number: "24-6",
+                        data: { vaso: "Shou Tai Yang", trigrama: "24-6", numero: "24-6", funcion: "Meridiano Intestino Delgado" }
+                    },
+                    {
+                        id: 3, from: 2, to: 3,
+                        vessel: "Du Mai", trigram: "≡△", number: "5",
+                        data: { vaso: "Du Mai", trigrama: "≡△", numero: "5", funcion: "Vaso Gobernador — rige todos los Yang" }
+                    },
+                    // Aristas cara inferior
+                    {
+                        id: 4, from: 4, to: 5,
+                        vessel: "Zu Tai Yang", trigram: "≡▽", number: "72-9",
+                        data: { vaso: "Zu Tai Yang", trigrama: "72-9", numero: "72-9", funcion: "Meridiano Vejiga Urinaria" }
+                    },
+                    {
+                        id: 5, from: 4, to: 6,
+                        vessel: "Yin Wei Mai", trigram: "≡≡▽", number: "6",
+                        data: { vaso: "Yin Wei Mai", trigrama: "≡≡▽", numero: "6", funcion: "Vincula todos los meridianos Yin" }
+                    },
+                    {
+                        id: 6, from: 5, to: 7,
+                        vessel: "Zu Shao Yang", trigram: "≈≈", number: "88-16-7",
+                        data: { vaso: "Zu Shao Yang", trigrama: "88-16-7", numero: "88-16-7", funcion: "Meridiano Vesícula Biliar" }
+                    },
+                    {
+                        id: 7, from: 6, to: 7,
+                        vessel: "Ren Mai", trigram: "≡≡", number: "8",
+                        data: { vaso: "Ren Mai", trigrama: "≡≡", numero: "8", funcion: "Vaso Concepción — rige todos los Yin" }
+                    },
+                    // Aristas verticales
+                    {
+                        id: 8, from: 0, to: 4,
+                        vessel: "Yang Qiao Mai", trigram: "▽☿", number: "7",
+                        data: { vaso: "Yang Qiao Mai", trigrama: "▽☿", numero: "7", funcion: "Vaso Yang del Talón" }
+                    },
+                    {
+                        id: 9, from: 1, to: 5,
+                        vessel: "Chong Mai", trigram: "♄△≡", number: "2",
+                        data: { vaso: "Chong Mai", trigrama: "♄△≡", numero: "2", funcion: "Vaso Penetrante" }
+                    },
+                    {
+                        id: 10, from: 2, to: 6,
+                        vessel: "Dai Mai", trigram: "♃▽", number: "3",
+                        data: { vaso: "Dai Mai", trigrama: "♃▽", numero: "3", funcion: "Vaso Cinturón" }
+                    },
+                    {
+                        id: 11, from: 3, to: 7,
+                        vessel: "Yin Qiao Mai", trigram: "⊕△≡", number: "9",
+                        data: { vaso: "Yin Qiao Mai", trigrama: "⊕△≡", numero: "9", funcion: "Vaso Yin del Talón" }
+                    }
                 ]
             }
         };
-        
         return this.data;
     }
 
-    /**
-     * Obtiene las conexiones de un vértice específico
-     * @param {number} vertexId - ID del vértice
-     * @returns {Array} Array de conexiones
-     */
     getVertexConnections(vertexId) {
         if (!this.data) return [];
-        
         return this.data.cube.edges
             .filter(edge => edge.from === vertexId || edge.to === vertexId)
             .map(edge => ({
@@ -177,36 +178,18 @@ export class DataManager {
             }));
     }
 
-    /**
-     * Busca un vértice por ID
-     * @param {number} id - ID del vértice
-     * @returns {Object|undefined} Vértice encontrado
-     */
     getVertexById(id) {
         return this.data?.cube.vertices.find(v => v.id === id);
     }
 
-    /**
-     * Busca una arista por ID
-     * @param {number} id - ID de la arista
-     * @returns {Object|undefined} Arista encontrada
-     */
     getEdgeById(id) {
         return this.data?.cube.edges.find(e => e.id === id);
     }
 
-    /**
-     * Obtiene todos los vértices
-     * @returns {Array} Array de vértices
-     */
     getAllVertices() {
         return this.data?.cube.vertices || [];
     }
 
-    /**
-     * Obtiene todas las aristas
-     * @returns {Array} Array de aristas
-     */
     getAllEdges() {
         return this.data?.cube.edges || [];
     }

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /**
  * RenderManager - Gestiona la escena Three.js y el renderizado
@@ -6,74 +7,69 @@ import * as THREE from 'three';
  */
 export class RenderManager {
     constructor(containerId = 'canvas-container') {
+        this.controls = null;
         this.containerId = containerId;
         this.container = null;
         this.scene = null;
         this.camera = null;
         this.renderer = null;
         this.lights = [];
-        
+
         this.init();
     }
 
-    /**
-     * Inicializa la escena Three.js
-     */
     init() {
         this.container = document.getElementById(this.containerId);
-        
         if (!this.container) {
-            throw new Error(`❌ Container #${this.containerId} no encontrado`);
+            throw new Error(`Container #${this.containerId} no encontrado`);
         }
 
-        // Crear escena
+        // Escena con fondo BLANCO y sin niebla
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x1a1a2e);
-        this.scene.fog = new THREE.Fog(0x1a1a2e, 10, 50);
+        this.scene.background = new THREE.Color(0xffffff);
 
-        // Crear cámara
+        // Cámara
         this.camera = new THREE.PerspectiveCamera(
-            75,
+            60,
             window.innerWidth / window.innerHeight,
             0.1,
             1000
         );
-        this.camera.position.set(5, 4, 6);
+        this.camera.position.set(4, 3, 5);
         this.camera.lookAt(0, 0, 0);
 
-        // Crear renderer
-        this.renderer = new THREE.WebGLRenderer({ 
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({
             antialias: true,
-            alpha: true
+            alpha: false
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        
-        this.container.appendChild(this.renderer.domElement);
 
-        // Configurar luces
+        this.container.appendChild(this.renderer.domElement);
+        
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enablePan = false;
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.01;
+        this.controls.minDistance = 5;
+        this.controls.maxDistance = 15;
+        
         this.setupLights();
 
-        // Añadir helpers
-        this.addHelpers();
-
-        // Manejar resize
         window.addEventListener('resize', () => this.handleResize());
     }
 
-    /**
-     * Configura las luces de la escena
-     */
     setupLights() {
-        // Luz ambiental
-        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+        // Luz ambiental fuerte para fondo claro
+        const ambient = new THREE.AmbientLight(0xffffff, 1.1);
         this.scene.add(ambient);
         this.lights.push(ambient);
 
-        // Luces direccionales
-        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        // Luz direccional principal suave
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.7);
         dirLight1.position.set(5, 10, 5);
         dirLight1.castShadow = true;
         dirLight1.shadow.mapSize.width = 1024;
@@ -81,78 +77,34 @@ export class RenderManager {
         this.scene.add(dirLight1);
         this.lights.push(dirLight1);
 
-        const dirLight2 = new THREE.DirectionalLight(0x667eea, 0.4);
+        // Luz fría complementaria
+        const dirLight2 = new THREE.DirectionalLight(0xdce8f5, 0.4);
         dirLight2.position.set(-5, 5, -5);
         this.scene.add(dirLight2);
         this.lights.push(dirLight2);
 
-        // Luz puntual
-        const pointLight = new THREE.PointLight(0x764ba2, 1, 100);
+        // Punto de luz suave
+        const pointLight = new THREE.PointLight(0xaabbcc, 0.5, 100);
         pointLight.position.set(0, 5, 0);
         this.scene.add(pointLight);
         this.lights.push(pointLight);
-
     }
 
-    /**
-     * Añade helpers visuales (grid, ejes, etc.)
-     */
-    addHelpers() {
-        // Grid
-        const gridHelper = new THREE.GridHelper(10, 10, 0x667eea, 0x333366);
-        gridHelper.material.transparent = true;
-        gridHelper.material.opacity = 0.3;
-        this.scene.add(gridHelper);
-
-        // Axes helper (solo en desarrollo)
-        if (import.meta.env.DEV) {
-            const axesHelper = new THREE.AxesHelper(2);
-            this.scene.add(axesHelper);
-        }
-    }
-
-    /**
-     * Maneja el redimensionamiento de la ventana
-     */
     handleResize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    /**
-     * Renderiza la escena
-     */
     render() {
+        this.controls.update();  
         this.renderer.render(this.scene, this.camera);
     }
 
-    /**
-     * Añade un objeto a la escena
-     * @param {THREE.Object3D} object - Objeto a añadir
-     */
-    addToScene(object) {
-        this.scene.add(object);
-    }
+    addToScene(object) { this.scene.add(object); }
+    removeFromScene(object) { this.scene.remove(object); }
+    dispose() { this.renderer.dispose(); }
 
-    /**
-     * Elimina un objeto de la escena
-     * @param {THREE.Object3D} object - Objeto a eliminar
-     */
-    removeFromScene(object) {
-        this.scene.remove(object);
-    }
-
-    /**
-     * Limpia recursos
-     */
-    dispose() {
-        this.renderer.dispose();
-    }
-
-    /**
-     * Getters
-     */
     getScene() { return this.scene; }
     getCamera() { return this.camera; }
     getRenderer() { return this.renderer; }
