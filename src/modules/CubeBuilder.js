@@ -2,7 +2,15 @@ import * as THREE from 'three';
 
 /**
  * CubeBuilder - Construye el cubo 3D interactivo
- * Responsabilidad: Crear geometría del cubo (vértices y aristas)
+ *
+ * Diseño de vértices (según indicaciones de Cristina):
+ *   - Círculo pequeño con el símbolo planetario dentro
+ *   - Alrededor (satélites): número, trigrama, vaso — texto oscuro y legible
+ *   - Sin tarjetas/paneles que tapen la estructura
+ *
+ * Aristas:
+ *   - Líneas más gruesas (TubeGeometry)
+ *   - Etiqueta mínima (signo + número + canal) en el punto medio
  */
 export class CubeBuilder {
     constructor(dataManager, renderManager) {
@@ -21,113 +29,119 @@ export class CubeBuilder {
         return { vertices: this.vertices, edges: this.edges };
     }
 
-    // ─── Helper: canvas rounded rect ─────────────────────────────────────────
-    roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-    }
-
-    createVertexLabel(symbol, number, name) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 192;
-        canvas.height = 112;
-        const ctx = canvas.getContext('2d');
-
-        // Sombra suave
-        ctx.shadowColor = 'rgba(0,0,0,0.18)';
-        ctx.shadowBlur = 8;
-
-        // Fondo blanco con borde gris suave
-        ctx.fillStyle = 'rgba(255,255,255,0.97)';
-        ctx.strokeStyle = '#b8c4d0';
-        ctx.lineWidth = 2;
-        this.roundRect(ctx, 3, 3, 186, 106, 12);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.shadowBlur = 0;
-
-        // Símbolo grande centrado arriba
-        ctx.fillStyle = '#1a2b40';
-        ctx.font = 'bold 38px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(symbol, 96, 52);
-
-        // Número en color vino
-        ctx.fillStyle = '#8b2252';
-        ctx.font = 'bold 16px "Georgia", serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(number, 96, 74);
-
-        // Nombre del meridiano
-        ctx.fillStyle = '#334455';
-        ctx.font = '11px "Georgia", serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(name, 96, 94);
-
+    // ─── Sprite desde canvas ──────────────────────────────────────────────────
+    makeSprite(canvas, scaleX, scaleY) {
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
-        const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+        const mat = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthTest: false,
+            depthWrite: false
+        });
         const sprite = new THREE.Sprite(mat);
-        sprite.scale.set(0.75, 0.44, 1);
+        sprite.scale.set(scaleX, scaleY, 1);
         sprite.userData = { type: 'label' };
         return sprite;
     }
 
-    // ─── Etiqueta de arista ───────────────────────────────────────────────────
-    createEdgeLabel(vessel, trigram, number) {
+    // ─── Círculo del vértice con símbolo planetario ───────────────────────────
+    createVertexCircle(planet) {
+        const size = 128;
         const canvas = document.createElement('canvas');
-        canvas.width = 200;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Círculo blanco con borde negro nítido
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.98)';
+        ctx.fill();
+        ctx.strokeStyle = '#0a1520';
+        ctx.lineWidth = 6;
+        ctx.stroke();
+
+        // Símbolo planetario — negro puro
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 58px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(planet, size / 2, size / 2 + 2);
+
+        return this.makeSprite(canvas, 0.28, 0.28);
+    }
+
+    // ─── Satélite: texto negro/oscuro y muy bold ──────────────────────────────
+    createSatelliteLabel(text, color) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, 256, 64);
+
+        // Fondo blanco opaco — máximo contraste
+        ctx.fillStyle = 'rgba(255,255,255,0.97)';
+        ctx.beginPath();
+        ctx.roundRect(2, 4, 252, 56, 8);
+        ctx.fill();
+
+        // Borde sutil
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Texto: negro/oscuro, 900 weight, grande
+        ctx.fillStyle = color;
+        ctx.font = '900 28px "Georgia", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 128, 34);
+
+        return this.makeSprite(canvas, 0.50, 0.125);
+    }
+
+    // ─── Etiqueta mínima para aristas ────────────────────────────────────────
+    createEdgeLabel(sign, number, canal) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 280;
         canvas.height = 80;
         const ctx = canvas.getContext('2d');
 
-        ctx.shadowColor = 'rgba(0,0,0,0.15)';
-        ctx.shadowBlur = 6;
+        ctx.clearRect(0, 0, 280, 80);
 
-        // Fondo blanco con borde vino suave
-        ctx.fillStyle = 'rgba(255,255,255,0.95)';
-        ctx.strokeStyle = '#9b3060';
-        ctx.lineWidth = 1.5;
-        this.roundRect(ctx, 2, 2, 196, 76, 10);
+        // Fondo blanco sólido
+        ctx.fillStyle = 'rgba(255,255,255,0.97)';
+        ctx.beginPath();
+        ctx.roundRect(2, 2, 276, 76, 8);
         ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        ctx.shadowBlur = 0;
-
-        // Trigrama a la izquierda
-        ctx.fillStyle = '#666';
-        ctx.font = '14px serif';
+        // Signo zodiacal — negro puro
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 28px serif';
         ctx.textAlign = 'left';
-        ctx.fillText(trigram || '', 10, 26);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(sign, 10, 26);
 
-        // Número en rojo vino a la derecha
-        ctx.fillStyle = '#9b3060';
-        ctx.font = 'bold 13px "Georgia", serif';
+        // Número — vino muy oscuro
+        ctx.fillStyle = '#6b0a3a';
+        ctx.font = '900 18px "Georgia", serif';
         ctx.textAlign = 'right';
-        ctx.fillText(number || '', 190, 26);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(number, 270, 22);
 
-        // Nombre del vaso centrado abajo
-        ctx.fillStyle = '#1a2b40';
-        ctx.font = 'bold 12px "Georgia", serif';
+        // Canal — negro puro
+        ctx.fillStyle = '#0a0a0a';
+        ctx.font = 'bold 17px "Georgia", serif';
         ctx.textAlign = 'center';
-        ctx.fillText(vessel, 100, 56);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(canal, 140, 56);
 
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.needsUpdate = true;
-        const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
-        const sprite = new THREE.Sprite(mat);
-        sprite.scale.set(1.0, 0.40, 1);
-        sprite.userData = { type: 'label' };
-        return sprite;
+        return this.makeSprite(canvas, 0.72, 0.18);
     }
 
     // ─── Crear vértices ───────────────────────────────────────────────────────
@@ -135,28 +149,32 @@ export class CubeBuilder {
         const vertexData = this.dataManager.getAllVertices();
 
         vertexData.forEach(data => {
-            // Esfera del vértice
-            const geometry = new THREE.SphereGeometry(0.13, 32, 32);
+
+            // Esfera invisible — solo para raycasting
+            const geometry = new THREE.SphereGeometry(0.10, 24, 24);
             const material = new THREE.MeshPhongMaterial({
-                color: 0x7a8fa6,
-                emissive: 0x2a3f55,
-                emissiveIntensity: 0.15,
-                shininess: 80,
+                color: 0x5577aa,
+                emissive: 0x223355,
+                emissiveIntensity: 0.2,
+                shininess: 60,
                 transparent: true,
-                opacity: 1
+                opacity: 0.0
             });
 
             const vertex = new THREE.Mesh(geometry, material);
             vertex.position.set(...data.position);
-            vertex.castShadow = true;
-            vertex.receiveShadow = true;
 
             vertex.userData = {
                 type: 'vertex',
                 id: data.id,
                 name: data.name,
-                symbol: data.symbol,
+                planet: data.planet,
+                planetName: data.planetName,
                 number: data.number,
+                trigram: data.trigram,
+                trigramName: data.trigramName,
+                vessel: data.vessel,
+                element: data.element,
                 data: data.data,
                 connections: this.dataManager.getVertexConnections(data.id)
             };
@@ -164,12 +182,38 @@ export class CubeBuilder {
             this.vertices.push(vertex);
             this.cubeGroup.add(vertex);
 
-            // Etiqueta flotante sobre el vértice
-            const label = this.createVertexLabel(data.symbol, data.number, data.name);
-            label.position.set(...data.position);
-            label.position.y += 0.42;
-            this.labels.push(label);
-            this.cubeGroup.add(label);
+            const pos = new THREE.Vector3(...data.position);
+
+            // 1) Círculo con símbolo planetario — centrado en el vértice
+            const circle = this.createVertexCircle(data.planet);
+            circle.position.copy(pos);
+            this.labels.push(circle);
+            this.cubeGroup.add(circle);
+
+            // 2) Número — encima, vino muy oscuro
+            const numLabel = this.createSatelliteLabel(data.number, '#6b0a3a');
+            numLabel.position.copy(pos);
+            numLabel.position.y += 0.26;
+            this.labels.push(numLabel);
+            this.cubeGroup.add(numLabel);
+
+            // 3) Trigrama — a la derecha, azul muy oscuro
+            const triLabel = this.createSatelliteLabel(
+                data.trigram + '  ' + data.trigramName,
+                '#0a1a3a'
+            );
+            triLabel.position.copy(pos);
+            triLabel.position.x += 0.38;
+            triLabel.position.y += 0.10;
+            this.labels.push(triLabel);
+            this.cubeGroup.add(triLabel);
+
+            // 4) Vaso — debajo, verde muy oscuro
+            const vasLabel = this.createSatelliteLabel(data.vessel, '#0a2010');
+            vasLabel.position.copy(pos);
+            vasLabel.position.y -= 0.26;
+            this.labels.push(vasLabel);
+            this.cubeGroup.add(vasLabel);
         });
     }
 
@@ -189,26 +233,22 @@ export class CubeBuilder {
             const from3 = new THREE.Vector3(...fromVertex.position);
             const to3 = new THREE.Vector3(...toVertex.position);
 
-            // Línea visual
-            const lineGeometry = new THREE.BufferGeometry().setFromPoints([from3, to3]);
-            const lineMaterial = new THREE.LineBasicMaterial({
-                color: 0x556677,
-                linewidth: 2,
+            // Tubo para grosor real en WebGL
+            const path = new THREE.LineCurve3(from3, to3);
+            const tubeGeo = new THREE.TubeGeometry(path, 1, 0.018, 6, false);
+            const tubeMat = new THREE.MeshBasicMaterial({
+                color: 0x223344,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.85
             });
-            const line = new THREE.Line(lineGeometry, lineMaterial);
+            const tube = new THREE.Mesh(tubeGeo, tubeMat);
 
             // Cilindro invisible para raycasting
             const direction = new THREE.Vector3().subVectors(to3, from3);
             const length = direction.length();
-            const cylinderGeometry = new THREE.CylinderGeometry(0.06, 0.06, length, 8);
-            const cylinderMaterial = new THREE.MeshBasicMaterial({
-                transparent: true,
-                opacity: 0,
-                visible: false
-            });
-            const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+            const cylGeo = new THREE.CylinderGeometry(0.07, 0.07, length, 6);
+            const cylMat = new THREE.MeshBasicMaterial({ visible: false });
+            const cylinder = new THREE.Mesh(cylGeo, cylMat);
 
             cylinder.position.copy(from3.clone().add(to3).multiplyScalar(0.5));
             cylinder.quaternion.setFromUnitVectors(
@@ -221,27 +261,30 @@ export class CubeBuilder {
                 id: data.id,
                 from: data.from,
                 to: data.to,
+                sign: data.sign,
+                signName: data.signName,
                 vessel: data.vessel,
                 trigram: data.trigram,
                 number: data.number,
                 data: data.data,
-                visualLine: line,
+                visualTube: tube,
                 isActive: false
             };
 
             this.edges.push(cylinder);
-            this.cubeGroup.add(line);
+            this.cubeGroup.add(tube);
             this.cubeGroup.add(cylinder);
 
-            // Etiqueta del vaso extraordinario en el punto medio
-            if (data.vessel) {
-                const mid = new THREE.Vector3(...fromVertex.position)
-                    .add(new THREE.Vector3(...toVertex.position))
-                    .multiplyScalar(0.5);
-
-                const edgeLabel = this.createEdgeLabel(data.vessel, data.trigram, data.number);
+            // Etiqueta en el punto medio
+            if (data.sign) {
+                const mid = from3.clone().add(to3).multiplyScalar(0.5);
+                const edgeLabel = this.createEdgeLabel(
+                    data.sign,
+                    data.number,
+                    data.vessel
+                );
                 edgeLabel.position.copy(mid);
-                edgeLabel.position.y += 0.18;
+                edgeLabel.position.y += 0.14;
                 this.labels.push(edgeLabel);
                 this.cubeGroup.add(edgeLabel);
             }
@@ -257,9 +300,9 @@ export class CubeBuilder {
         this.edges.forEach(e => {
             e.geometry.dispose();
             e.material.dispose();
-            if (e.userData.visualLine) {
-                e.userData.visualLine.geometry.dispose();
-                e.userData.visualLine.material.dispose();
+            if (e.userData.visualTube) {
+                e.userData.visualTube.geometry.dispose();
+                e.userData.visualTube.material.dispose();
             }
         });
         this.labels.forEach(l => {

@@ -99,8 +99,8 @@ export class App {
         connections.forEach(conn => {
             const edge = this.cubeBuilder.getEdges().find(e => e.userData.id === conn.edgeId);
             if (edge) {
-                edge.userData.visualLine.material.color.setHex(0x9b3060);
-                edge.userData.visualLine.material.opacity = 1;
+                edge.userData.visualTube.material.color.setHex(0x9b3060);
+                edge.userData.visualTube.material.opacity = 1;
                 edge.userData.isActive = true;
                 activeConnections.push(edge);
             }
@@ -146,7 +146,7 @@ export class App {
         );
 
         // Resaltar arista seleccionada en dorado
-        edge.userData.visualLine.material.color.setHex(0xb8860b);
+        edge.userData.visualTube.material.color.setHex(0xb8860b);
     }
 
     handleHover(vertex, edge, event) {
@@ -155,7 +155,7 @@ export class App {
         if (vertex) {
             this.uiManager.showTooltip(
                 `<strong>${vertex.userData.name}</strong><br>
-                 ${vertex.userData.symbol} · Nº ${vertex.userData.number}<br>
+                 ${vertex.userData.planet} ${vertex.userData.planetName} · Nº ${vertex.userData.number}<br>
                  <em>Clic para seleccionar</em>`,
                 event.clientX, event.clientY
             );
@@ -184,8 +184,8 @@ export class App {
         }
 
         state.activeConnections.forEach(edge => {
-            edge.userData.visualLine.material.color.setHex(0x556677);
-            edge.userData.visualLine.material.opacity = 0.8;
+            edge.userData.visualTube.material.color.setHex(0x556677);
+            edge.userData.visualTube.material.opacity = 0.8;
             edge.userData.isActive = false;
         });
 
@@ -246,7 +246,7 @@ export class App {
         const time = Date.now() * 0.001;
         state.activeConnections.forEach(edge => {
             const pulse = Math.sin(time * 3) * 0.25 + 0.75;
-            edge.userData.visualLine.material.opacity = pulse;
+            edge.userData.visualTube.material.opacity = pulse;
         });
 
         this.renderManager.render();

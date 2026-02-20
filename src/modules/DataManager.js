@@ -1,6 +1,6 @@
 /**
  * DataManager - Gestiona la carga y acceso a datos del cubo
- * Responsabilidad: Única fuente de verdad para los datos
+ * Datos exactos según el PDF de vértices y aristas
  */
 export class DataManager {
     constructor() {
@@ -31,135 +31,226 @@ export class DataManager {
     loadDefaultData() {
         this.data = {
             cube: {
+                // ─── 8 VÉRTICES (según PDF) ───────────────────────────────
+                // x: -1=izquierda  +1=derecha
+                // y: -1=inferior   +1=superior
+                // z: -1=posterior  +1=frontal
                 vertices: [
                     {
                         id: 0,
-                        name: "Shou Yang Ming",
-                        position: [-1, 1, -1],
-                        symbol: "♂",
-                        number: "33",
-                        data: { canal: "Intestino Grueso", elemento: "Metal", numero: "33", descripcion: "Meridiano Mano Yang Brillante" }
+                        name: "Dai Mai",
+                        position: [-1, 1, 1],
+                        planet: "♃",
+                        planetName: "Júpiter",
+                        number: "3",
+                        element: "▽",
+                        trigram: "☲",
+                        trigramName: "Fuego",
+                        vessel: "Dai Mai",
+                        data: { planeta: "Júpiter ♃", numero: "3", elemento: "Tierra ▽", trigrama: "☲ Fuego", vaso: "Dai Mai" }
                     },
                     {
                         id: 1,
-                        name: "Zu Yang Ming",
-                        position: [1, 1, -1],
-                        symbol: "II",
-                        number: "64",
-                        data: { canal: "Estómago", elemento: "Tierra", numero: "64", descripcion: "Meridiano Pie Yang Brillante" }
+                        name: "Du Mai",
+                        position: [1, 1, 1],
+                        planet: "☉",
+                        planetName: "Sol",
+                        number: "5",
+                        element: "△",
+                        trigram: "☰",
+                        trigramName: "Cielo",
+                        vessel: "Du Mai",
+                        data: { planeta: "Sol ☉", numero: "5", elemento: "Fuego △", trigrama: "☰ Cielo", vaso: "Du Mai" }
                     },
                     {
                         id: 2,
-                        name: "Shou Shao Yin",
-                        position: [-1, 1, 1],
-                        symbol: "⊙",
-                        number: "5",
-                        data: { canal: "Corazón", elemento: "Fuego", numero: "5", descripcion: "Meridiano Mano Menor Yin" }
+                        name: "Yang Wei Mai",
+                        position: [1, 1, -1],
+                        planet: "♂",
+                        planetName: "Marte",
+                        number: "4",
+                        element: "△",
+                        trigram: "☱",
+                        trigramName: "Lago",
+                        vessel: "Yang Wei Mai",
+                        data: { planeta: "Marte ♂", numero: "4", elemento: "Aire △", trigrama: "☱ Lago", vaso: "Yang Wei Mai" }
                     },
                     {
                         id: 3,
-                        name: "Shou Tai Yin",
-                        position: [1, 1, 1],
-                        symbol: "♐",
-                        number: "9",
-                        data: { canal: "Pulmón", elemento: "Metal", numero: "9", descripcion: "Meridiano Mano Mayor Yin" }
+                        name: "Yang Qiao Mai",
+                        position: [-1, 1, -1],
+                        planet: "☿",
+                        planetName: "Mercurio",
+                        number: "7",
+                        element: "▽",
+                        trigram: "☳",
+                        trigramName: "Trueno",
+                        vessel: "Yang Qiao Mai",
+                        data: { planeta: "Mercurio ☿", numero: "7", elemento: "Agua ▽", trigrama: "☳ Trueno", vaso: "Yang Qiao Mai" }
                     },
                     {
                         id: 4,
-                        name: "Zu Jue Yin",
-                        position: [-1, -1, -1],
-                        symbol: "♓",
-                        number: "40-4",
-                        data: { canal: "Hígado", elemento: "Madera", numero: "40-4", descripcion: "Meridiano Pie Jue Yin" }
+                        name: "Yin Wei Mai",
+                        position: [-1, -1, 1],
+                        planet: "♀",
+                        planetName: "Venus",
+                        number: "6",
+                        element: "▽",
+                        trigram: "☶",
+                        trigramName: "Montaña",
+                        vessel: "Yin Wei Mai",
+                        data: { planeta: "Venus ♀", numero: "6", elemento: "Tierra ▽", trigrama: "☶ Montaña", vaso: "Yin Wei Mai" }
                     },
                     {
                         id: 5,
-                        name: "Shou Shao Yang",
-                        position: [1, -1, -1],
-                        symbol: "♑",
-                        number: "27-9",
-                        data: { canal: "Triple Calentador", elemento: "Fuego", numero: "27-9", descripcion: "Meridiano Mano Menor Yang" }
+                        name: "Yin Qiao Mai",
+                        position: [1, -1, 1],
+                        planet: "⊕",
+                        planetName: "Tierra",
+                        number: "9",
+                        element: "△",
+                        trigram: "☴",
+                        trigramName: "Viento",
+                        vessel: "Yin Qiao Mai",
+                        data: { planeta: "Tierra ⊕", numero: "9", elemento: "Fuego △", trigrama: "☴ Viento", vaso: "Yin Qiao Mai" }
                     },
                     {
                         id: 6,
-                        name: "Zu Shao Yin",
-                        position: [-1, -1, 1],
-                        symbol: "♏",
-                        number: "55-10-1",
-                        data: { canal: "Riñón", elemento: "Agua", numero: "55-10-1", descripcion: "Meridiano Pie Menor Yin" }
+                        name: "Chong Mai",
+                        position: [1, -1, -1],
+                        planet: "♄",
+                        planetName: "Saturno",
+                        number: "2",
+                        element: "△",
+                        trigram: "☵",
+                        trigramName: "Agua/Kan",
+                        vessel: "Chong Mai",
+                        data: { planeta: "Saturno ♄", numero: "2", elemento: "Aire △", trigrama: "☵ Agua/Kan", vaso: "Chong Mai" }
                     },
                     {
                         id: 7,
-                        name: "Shou Jue Yin",
-                        position: [1, -1, 1],
-                        symbol: "⊕",
+                        name: "Ren Mai",
+                        position: [-1, -1, -1],
+                        planet: "☽",
+                        planetName: "Luna",
                         number: "8",
-                        data: { canal: "Pericardio", elemento: "Fuego", numero: "8", descripcion: "Meridiano Mano Jue Yin" }
+                        element: "▽",
+                        trigram: "☷",
+                        trigramName: "Tierra/Kun",
+                        vessel: "Ren Mai",
+                        data: { planeta: "Luna ☽", numero: "8", elemento: "Agua ▽", trigrama: "☷ Tierra/Kun", vaso: "Ren Mai" }
                     }
                 ],
+
+                // ─── 12 ARISTAS (según PDF) ──────────────────────────────
                 edges: [
-                    // Aristas cara superior
+                    // A1 – Inferior frontal  (V5–V6)  id4–id5
                     {
-                        id: 0, from: 0, to: 1,
-                        vessel: "Yang Wei Mai", trigram: "☰△", number: "4",
-                        data: { vaso: "Yang Wei Mai", trigrama: "☰△", numero: "4", funcion: "Vincula todos los meridianos Yang" }
+                        id: 0, from: 4, to: 5,
+                        sign: "♐", signName: "Sagitario",
+                        vessel: "Shou Jue Yin",
+                        trigram: "♐",
+                        number: "8",
+                        data: { signo: "♐ Sagitario", numero: "8", canal: "Shou Jue Yin" }
                     },
+                    // A2 – Inferior derecha  (V6–V7)  id5–id6
                     {
-                        id: 1, from: 0, to: 2,
-                        vessel: "Zu Tai Yin", trigram: "≡▽", number: "45-9",
-                        data: { vaso: "Zu Tai Yin", trigrama: "≡▽", numero: "45-9", funcion: "Meridiano Bazo-Páncreas" }
+                        id: 1, from: 5, to: 6,
+                        sign: "♒", signName: "Acuario",
+                        vessel: "Zu Shao Yang",
+                        trigram: "♒",
+                        number: "88→16→7",
+                        data: { signo: "♒ Acuario", numero: "88→16→7", canal: "Zu Shao Yang" }
                     },
+                    // A3 – Inferior izquierda  (V5–V8)  id4–id7
                     {
-                        id: 2, from: 1, to: 3,
-                        vessel: "Shou Tai Yang", trigram: "≡☵", number: "24-6",
-                        data: { vaso: "Shou Tai Yang", trigrama: "24-6", numero: "24-6", funcion: "Meridiano Intestino Delgado" }
+                        id: 2, from: 4, to: 7,
+                        sign: "♏", signName: "Escorpio",
+                        vessel: "Zu Shao Yin",
+                        trigram: "♏",
+                        number: "55→10→1",
+                        data: { signo: "♏ Escorpio", numero: "55→10→1", canal: "Zu Shao Yin" }
                     },
+                    // A4 – Inferior posterior  (V7–V8)  id6–id7
                     {
-                        id: 3, from: 2, to: 3,
-                        vessel: "Du Mai", trigram: "≡△", number: "5",
-                        data: { vaso: "Du Mai", trigrama: "≡△", numero: "5", funcion: "Vaso Gobernador — rige todos los Yang" }
+                        id: 3, from: 6, to: 7,
+                        sign: "♑", signName: "Capricornio",
+                        vessel: "Shou Shao Yang",
+                        trigram: "♑",
+                        number: "27→9",
+                        data: { signo: "♑ Capricornio", numero: "27→9", canal: "Shou Shao Yang" }
                     },
-                    // Aristas cara inferior
+                    // A5 – Lateral derecha anterior  (V2–V6)  id1–id5
                     {
-                        id: 4, from: 4, to: 5,
-                        vessel: "Zu Tai Yang", trigram: "≡▽", number: "72-9",
-                        data: { vaso: "Zu Tai Yang", trigrama: "72-9", numero: "72-9", funcion: "Meridiano Vejiga Urinaria" }
+                        id: 4, from: 1, to: 5,
+                        sign: "♈", signName: "Aries",
+                        vessel: "Shou Tai Yin",
+                        trigram: "♈",
+                        number: "9",
+                        data: { signo: "♈ Aries", numero: "9", canal: "Shou Tai Yin" }
                     },
+                    // A6 – Lateral izquierda anterior  (V1–V5)  id0–id4
                     {
-                        id: 5, from: 4, to: 6,
-                        vessel: "Yin Wei Mai", trigram: "≡≡▽", number: "6",
-                        data: { vaso: "Yin Wei Mai", trigrama: "≡≡▽", numero: "6", funcion: "Vincula todos los meridianos Yin" }
+                        id: 5, from: 0, to: 4,
+                        sign: "♎", signName: "Libra",
+                        vessel: "Zu Tai Yang",
+                        trigram: "♎",
+                        number: "72→9",
+                        data: { signo: "♎ Libra", numero: "72→9", canal: "Zu Tai Yang" }
                     },
+                    // A7 – Lateral derecha posterior  (V3–V7)  id2–id6
                     {
-                        id: 6, from: 5, to: 7,
-                        vessel: "Zu Shao Yang", trigram: "≈≈", number: "88-16-7",
-                        data: { vaso: "Zu Shao Yang", trigrama: "88-16-7", numero: "88-16-7", funcion: "Meridiano Vesícula Biliar" }
+                        id: 6, from: 2, to: 6,
+                        sign: "♍", signName: "Virgo",
+                        vessel: "Shou Tai Yang",
+                        trigram: "♍",
+                        number: "24→6",
+                        data: { signo: "♍ Virgo", numero: "24→6", canal: "Shou Tai Yang" }
                     },
+                    // A8 – Lateral izquierda posterior  (V4–V8)  id3–id7
                     {
-                        id: 7, from: 6, to: 7,
-                        vessel: "Ren Mai", trigram: "≡≡", number: "8",
-                        data: { vaso: "Ren Mai", trigrama: "≡≡", numero: "8", funcion: "Vaso Concepción — rige todos los Yin" }
+                        id: 7, from: 3, to: 7,
+                        sign: "♓", signName: "Piscis",
+                        vessel: "Zu Jue Yin",
+                        trigram: "♓",
+                        number: "40→4",
+                        data: { signo: "♓ Piscis", numero: "40→4", canal: "Zu Jue Yin" }
                     },
-                    // Aristas verticales
+                    // A9 – Superior frontal  (V1–V2)  id0–id1
                     {
-                        id: 8, from: 0, to: 4,
-                        vessel: "Yang Qiao Mai", trigram: "▽☿", number: "7",
-                        data: { vaso: "Yang Qiao Mai", trigrama: "▽☿", numero: "7", funcion: "Vaso Yang del Talón" }
+                        id: 8, from: 0, to: 1,
+                        sign: "♌", signName: "Leo",
+                        vessel: "Shou Shao Yin",
+                        trigram: "♌",
+                        number: "11→2",
+                        data: { signo: "♌ Leo", numero: "11→2", canal: "Shou Shao Yin" }
                     },
+                    // A10 – Superior derecha  (V2–V3)  id1–id2
                     {
-                        id: 9, from: 1, to: 5,
-                        vessel: "Chong Mai", trigram: "♄△≡", number: "2",
-                        data: { vaso: "Chong Mai", trigrama: "♄△≡", numero: "2", funcion: "Vaso Penetrante" }
+                        id: 9, from: 1, to: 2,
+                        sign: "♊", signName: "Géminis",
+                        vessel: "Zu Yang Ming",
+                        trigram: "♊",
+                        number: "64",
+                        data: { signo: "♊ Géminis", numero: "64", canal: "Zu Yang Ming" }
                     },
+                    // A11 – Superior izquierda  (V1–V4)  id0–id3
                     {
-                        id: 10, from: 2, to: 6,
-                        vessel: "Dai Mai", trigram: "♃▽", number: "3",
-                        data: { vaso: "Dai Mai", trigrama: "♃▽", numero: "3", funcion: "Vaso Cinturón" }
+                        id: 10, from: 0, to: 3,
+                        sign: "♋", signName: "Cáncer",
+                        vessel: "Zu Tai Yin",
+                        trigram: "♋",
+                        number: "45→9",
+                        data: { signo: "♋ Cáncer", numero: "45→9", canal: "Zu Tai Yin" }
                     },
+                    // A12 – Superior posterior  (V3–V4)  id2–id3
                     {
-                        id: 11, from: 3, to: 7,
-                        vessel: "Yin Qiao Mai", trigram: "⊕△≡", number: "9",
-                        data: { vaso: "Yin Qiao Mai", trigrama: "⊕△≡", numero: "9", funcion: "Vaso Yin del Talón" }
+                        id: 11, from: 2, to: 3,
+                        sign: "♉", signName: "Tauro",
+                        vessel: "Shou Yang Ming",
+                        trigram: "♉",
+                        number: "33",
+                        data: { signo: "♉ Tauro", numero: "33", canal: "Shou Yang Ming" }
                     }
                 ]
             }
