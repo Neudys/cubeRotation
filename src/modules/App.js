@@ -18,6 +18,11 @@ export class App {
 
         this.cubeGroup = null;
 
+        // Two-click selection state
+        this.firstVertex = null;
+        this.secondVertex = null;
+        this.activeEdge = null;
+
         this.isDragging = false;
         this.previousMouse = { x: 0, y: 0 };
 
@@ -31,9 +36,8 @@ export class App {
             this.renderManager = new RenderManager('canvas-container');
 
             this.cubeBuilder = new CubeBuilder(this.dataManager, this.renderManager);
-            this.cubeBuilder.build();
+            await this.cubeBuilder.build();
             this.cubeGroup = this.cubeBuilder.getGroup();
-
 
             this.interactionManager = new InteractionManager(this.renderManager, this.cubeBuilder);
             this.setupInteractions();
@@ -78,75 +82,126 @@ export class App {
         });
     }
 
-    handleVertexClick(vertex) {
-        const state = this.stateManager.getState();
+    // ─── Visual helpers ──────────────────────────────────────────────────────
 
-        if (state.selectedVertex === vertex) {
+    _highlightVertex(vertex) {
+        vertex.material.color.setHex(0xc0305a);
+        vertex.material.emissive.setHex(0x9b1040);
+        vertex.material.emissiveIntensity = 0.6;
+        vertex.material.opacity = 0.85;
+        vertex.material.transparent = true;
+        // Scale up slightly so it's clearly visible
+        vertex.scale.set(2.2, 2.2, 2.2);
+    }
+
+    _resetVertexVisual(vertex) {
+        if (!vertex) return;
+        vertex.material.color.setHex(0x7a8fa6);
+        vertex.material.emissive.setHex(0x2a3f55);
+        vertex.material.emissiveIntensity = 0.15;
+        vertex.material.opacity = 0.0;
+        vertex.scale.set(1, 1, 1);
+    }
+
+    _highlightEdge(edge) {
+        edge.userData.visualTube.material.color.setHex(0x9b3060);
+        edge.userData.visualTube.material.opacity = 1;
+        edge.userData.isActive = true;
+    }
+
+    _resetEdgeVisual(edge) {
+        if (!edge) return;
+        edge.userData.visualTube.material.color.setHex(0x223344);
+        edge.userData.visualTube.material.opacity = 0.85;
+        edge.userData.isActive = false;
+    }
+
+    // ─── Find direct edge between two vertices ────────────────────────────────
+
+    _findEdgeBetween(v1, v2) {
+        const id1 = v1.userData.id;
+        const id2 = v2.userData.id;
+        return this.cubeBuilder.getEdges().find(e =>
+            (e.userData.from === id1 && e.userData.to === id2) ||
+            (e.userData.from === id2 && e.userData.to === id1)
+        ) || null;
+    }
+
+    // ─── Main click handler ───────────────────────────────────────────────────
+
+    handleVertexClick(vertex) {
+        // Clicking the same first vertex → deselect everything
+        if (this.firstVertex === vertex && !this.secondVertex) {
             this.resetSelection();
             return;
         }
 
-        this.resetSelection();
+        // Clicking the same second vertex → deselect second
+        if (this.secondVertex === vertex) {
+            this._resetVertexVisual(this.secondVertex);
+            this._resetEdgeVisual(this.activeEdge);
+            this.secondVertex = null;
+            this.activeEdge = null;
+            this.stateManager.setState({ activeConnections: [] });
+            // Back to single vertex state
+            const d = this.firstVertex.userData;
+            this.uiManager.showVertexCard(d);
+            this.uiManager.updateStatus(
+                `<strong>${d.name}</strong> seleccionado. Haz clic en otro vértice para ver la conexión.`
+            );
+            return;
+        }
 
-        // Color de selección: vino/rosa como en el diagrama original
-        vertex.material.color.setHex(0x9b3060);
-        vertex.material.emissive.setHex(0x6b1040);
-        vertex.material.emissiveIntensity = 0.4;
+        // ── No vertex selected → first click ──────────────────────────────────
+        if (!this.firstVertex) {
+            this.firstVertex = vertex;
+            this._highlightVertex(vertex);
+            this.stateManager.setState({ selectedVertex: vertex, activeConnections: [] });
 
-        const connections = vertex.userData.connections;
-        const activeConnections = [];
+            const d = vertex.userData;
+            this.uiManager.showVertexCard(d);
+            this.uiManager.updateStatus(
+                `<strong>${d.name}</strong> seleccionado · Haz clic en otro vértice para ver su conexión`
+            );
+            return;
+        }
 
-        connections.forEach(conn => {
-            const edge = this.cubeBuilder.getEdges().find(e => e.userData.id === conn.edgeId);
-            if (edge) {
-                edge.userData.visualTube.material.color.setHex(0x9b3060);
-                edge.userData.visualTube.material.opacity = 1;
-                edge.userData.isActive = true;
-                activeConnections.push(edge);
-            }
-        });
+        // ── First vertex exists → second click ────────────────────────────────
+        // Reset previous second vertex and edge if any
+        this._resetVertexVisual(this.secondVertex);
+        this._resetEdgeVisual(this.activeEdge);
 
-        this.stateManager.setState({ selectedVertex: vertex, activeConnections });
+        this.secondVertex = vertex;
+        this._highlightVertex(vertex);
 
-        const d = vertex.userData.data;
-        this.uiManager.updateStatus(
-            `<strong>${vertex.userData.name}</strong><br>
-             Canal: ${d.canal} &nbsp;|&nbsp; Elemento: ${d.elemento}<br>
-             Nº ${vertex.userData.number} &nbsp;·&nbsp; ${d.descripcion || ''}<br>
-             <span style="color:#9b3060">↓ Clic en una arista resaltada para ver el vaso</span>`
-        );
+        const connectingEdge = this._findEdgeBetween(this.firstVertex, this.secondVertex);
+        this.activeEdge = connectingEdge;
+
+        if (connectingEdge) {
+            this._highlightEdge(connectingEdge);
+            this.stateManager.setState({ activeConnections: [connectingEdge] });
+            this.uiManager.showConnectionPanel(
+                this.firstVertex.userData,
+                connectingEdge.userData,
+                this.secondVertex.userData
+            );
+            this.uiManager.updateStatus(
+                `${this.firstVertex.userData.name} ↔ ${this.secondVertex.userData.name}`
+            );
+        } else {
+            this.stateManager.setState({ activeConnections: [] });
+            this.uiManager.showWarning(
+                `No hay conexión directa entre <strong>${this.firstVertex.userData.name}</strong> y <strong>${this.secondVertex.userData.name}</strong>`
+            );
+        }
     }
 
     handleEdgeClick(edge) {
-        const state = this.stateManager.getState();
-
-        if (!state.selectedVertex) {
-            this.uiManager.showWarning('Primero selecciona un vértice');
-            return;
+        // Edge click now only relevant if it's the active edge
+        if (edge === this.activeEdge) {
+            // Already shown in panel — could show expanded info if needed
+            edge.userData.visualTube.material.color.setHex(0xb8860b);
         }
-
-        if (!state.activeConnections.includes(edge)) {
-            this.uiManager.showWarning('Esta arista no está conectada al vértice seleccionado');
-            return;
-        }
-
-        const fromVertex = this.dataManager.getVertexById(edge.userData.from);
-        const toVertex = this.dataManager.getVertexById(edge.userData.to);
-
-        this.uiManager.showDataPanel(
-            `Vaso Extraordinario`,
-            {
-                'Vaso': edge.userData.vessel || '—',
-                'Trigrama': edge.userData.trigram || '—',
-                'Número': edge.userData.number || '—',
-                'Desde': fromVertex.name,
-                'Hasta': toVertex.name,
-                ...edge.userData.data
-            }
-        );
-
-        // Resaltar arista seleccionada en dorado
-        edge.userData.visualTube.material.color.setHex(0xb8860b);
     }
 
     handleHover(vertex, edge, event) {
@@ -155,16 +210,16 @@ export class App {
         if (vertex) {
             this.uiManager.showTooltip(
                 `<strong>${vertex.userData.name}</strong><br>
-                 ${vertex.userData.planet} ${vertex.userData.planetName} · Nº ${vertex.userData.number}<br>
+                 ${vertex.userData.planet || ''} ${vertex.userData.planetName || ''} · Nº ${vertex.userData.number || ''}<br>
                  <em>Clic para seleccionar</em>`,
                 event.clientX, event.clientY
             );
             this.uiManager.setCursor('pointer');
         } else if (edge && state.activeConnections.includes(edge)) {
             this.uiManager.showTooltip(
-                `<strong>${edge.userData.vessel || 'Vaso'}</strong><br>
-                 ${edge.userData.trigram || ''} · Nº ${edge.userData.number || ''}<br>
-                 <em>Clic para ver datos</em>`,
+                `<strong>${edge.userData.vessel || 'Arista'}</strong><br>
+                 ${edge.userData.sign || ''} ${edge.userData.signName || ''} · Nº ${edge.userData.number || ''}<br>
+                 <em>Conexión activa</em>`,
                 event.clientX, event.clientY
             );
             this.uiManager.setCursor('pointer');
@@ -175,19 +230,13 @@ export class App {
     }
 
     resetSelection() {
-        const state = this.stateManager.getState();
+        this._resetVertexVisual(this.firstVertex);
+        this._resetVertexVisual(this.secondVertex);
+        this._resetEdgeVisual(this.activeEdge);
 
-        if (state.selectedVertex) {
-            state.selectedVertex.material.color.setHex(0x7a8fa6);
-            state.selectedVertex.material.emissive.setHex(0x2a3f55);
-            state.selectedVertex.material.emissiveIntensity = 0.15;
-        }
-
-        state.activeConnections.forEach(edge => {
-            edge.userData.visualTube.material.color.setHex(0x556677);
-            edge.userData.visualTube.material.opacity = 0.8;
-            edge.userData.isActive = false;
-        });
+        this.firstVertex = null;
+        this.secondVertex = null;
+        this.activeEdge = null;
 
         this.stateManager.setState({ selectedVertex: null, activeConnections: [] });
         this.uiManager.hideDataPanel();
@@ -229,25 +278,22 @@ export class App {
     }
 
     animate() {
-
         const state = this.stateManager.getState();
-
         requestAnimationFrame(() => this.animate());
 
-        const delta = this.clock.getDelta(); 
-
+        const delta = this.clock.getDelta();
 
         if (state.autoRotate) {
-            this.cubeGroup.rotation.y += 0.2 * delta; 
-            this.cubeGroup.rotation.x += 0.1 * delta; 
+            this.cubeGroup.rotation.y += 0.2 * delta;
+            this.cubeGroup.rotation.x += 0.1 * delta;
         }
 
-        // Pulsación suave en conexiones activas
-        const time = Date.now() * 0.001;
-        state.activeConnections.forEach(edge => {
+        // Pulse active edge
+        if (this.activeEdge) {
+            const time = Date.now() * 0.001;
             const pulse = Math.sin(time * 3) * 0.25 + 0.75;
-            edge.userData.visualTube.material.opacity = pulse;
-        });
+            this.activeEdge.userData.visualTube.material.opacity = pulse;
+        }
 
         this.renderManager.render();
     }

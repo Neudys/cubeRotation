@@ -1,7 +1,3 @@
-/**
- * StateManager - Gestiona el estado de la aplicación
- * Responsabilidad: Estado centralizado con patrón Observer
- */
 export class StateManager {
     constructor() {
         this.state = {

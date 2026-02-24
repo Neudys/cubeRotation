@@ -1,9 +1,5 @@
 import * as THREE from 'three';
 
-/**
- * HypercubeBuilder - Construye visualización de hipercubo 4D (tesseract)
- * Responsabilidad: Crear proyección 3D de un hipercubo 4D
- */
 export class HypercubeBuilder {
     constructor(renderManager) {
         this.renderManager = renderManager;

@@ -1,10 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-/**
- * RenderManager - Gestiona la escena Three.js y el renderizado
- * Responsabilidad: Todo lo relacionado con Three.js y la visualización
- */
 export class RenderManager {
     constructor(containerId = 'canvas-container') {
         this.controls = null;

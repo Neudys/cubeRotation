@@ -1,9 +1,5 @@
 import * as THREE from 'three';
 
-/**
- * InteractionManager - Gestiona interacciones del usuario (clicks, hover)
- * Responsabilidad: Raycasting y detección de eventos
- */
 export class InteractionManager {
     constructor(renderManager, cubeBuilder) {
         this.renderManager = renderManager;
