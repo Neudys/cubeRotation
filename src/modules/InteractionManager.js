@@ -17,17 +17,25 @@ export class InteractionManager {
         // Guardamos referencia bound para poder removerlos luego
         this._handleClick = (e) => this.handleClick(e);
         this._handleMouseMove = (e) => this.handleMouseMove(e);
+        this._handleMouseDown = (e) => { this._mouseDownPos = { x: e.clientX, y: e.clientY }; };
 
         this.setupEventListeners();
     }
 
     setupEventListeners() {
         const canvas = this.renderManager.getRenderer().domElement;
+        canvas.addEventListener('mousedown', this._handleMouseDown);
         canvas.addEventListener('click', this._handleClick);
         canvas.addEventListener('mousemove', this._handleMouseMove);
     }
 
     handleClick(event) {
+        // Ignore clicks that followed a drag (orbit rotation)
+        if (this._mouseDownPos) {
+            const dx = event.clientX - this._mouseDownPos.x;
+            const dy = event.clientY - this._mouseDownPos.y;
+            if (Math.sqrt(dx * dx + dy * dy) > 5) return;
+        }
         this.updateMouse(event);
         this.raycaster.setFromCamera(this.mouse, this.renderManager.getCamera());
 
@@ -79,6 +87,7 @@ export class InteractionManager {
 
     dispose() {
         const canvas = this.renderManager.getRenderer().domElement;
+        canvas.removeEventListener('mousedown', this._handleMouseDown);
         canvas.removeEventListener('click', this._handleClick);
         canvas.removeEventListener('mousemove', this._handleMouseMove);
     }

@@ -80,18 +80,22 @@ export class App {
         this.interactionManager.on('onHover', ({ vertex, edge, event }) => {
             this.handleHover(vertex, edge, event);
         });
+
+        this.interactionManager.on('onNoSelection', () => {
+            this.resetSelection();
+        });
     }
 
     // ─── Visual helpers ──────────────────────────────────────────────────────
 
+// DESPUÉS:
     _highlightVertex(vertex) {
         vertex.material.color.setHex(0xc0305a);
-        vertex.material.emissive.setHex(0x9b1040);
-        vertex.material.emissiveIntensity = 0.6;
+        vertex.material.emissive.setHex(0xc0305a);
+        vertex.material.emissiveIntensity = 0.5;
         vertex.material.opacity = 0.85;
         vertex.material.transparent = true;
-        // Scale up slightly so it's clearly visible
-        vertex.scale.set(2.2, 2.2, 2.2);
+        vertex.scale.set(2.0, 2.0, 2.0);
     }
 
     _resetVertexVisual(vertex) {
@@ -100,11 +104,13 @@ export class App {
         vertex.material.emissive.setHex(0x2a3f55);
         vertex.material.emissiveIntensity = 0.15;
         vertex.material.opacity = 0.0;
+        vertex.material.transparent = true;
         vertex.scale.set(1, 1, 1);
     }
 
+    // DESPUÉS (bien):
     _highlightEdge(edge) {
-        edge.userData.visualTube.material.color.setHex(0x9b3060);
+        edge.userData.visualTube.material.color.setHex(0xc0305a);
         edge.userData.visualTube.material.opacity = 1;
         edge.userData.isActive = true;
     }
@@ -189,9 +195,23 @@ export class App {
                 `${this.firstVertex.userData.name} ↔ ${this.secondVertex.userData.name}`
             );
         } else {
-            this.stateManager.setState({ activeConnections: [] });
-            this.uiManager.showWarning(
-                `No hay conexión directa entre <strong>${this.firstVertex.userData.name}</strong> y <strong>${this.secondVertex.userData.name}</strong>`
+            // No direct connection → reset everything and select new vertex as first
+            this._resetVertexVisual(this.firstVertex);
+            this._resetVertexVisual(this.secondVertex);
+            this._resetEdgeVisual(this.activeEdge);
+
+            this.secondVertex = null;
+            this.activeEdge = null;
+
+            // Make the attempted vertex the new first selection
+            this.firstVertex = vertex;
+            this._highlightVertex(vertex);
+            this.stateManager.setState({ selectedVertex: vertex, activeConnections: [] });
+
+            const d = vertex.userData;
+            this.uiManager.showVertexCard(d);
+            this.uiManager.updateStatus(
+                `<strong>${d.name}</strong> seleccionado · Haz clic en otro vértice para ver su conexión`
             );
         }
     }

@@ -77,7 +77,25 @@ export class CubeBuilder {
         const img = iconUrl ? await this._loadImage(iconUrl) : null;
 
         if (img) {
-            ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
+            // Dibujar en canvas temporal e invertir blanco → negro
+            const tmp = document.createElement('canvas');
+            tmp.width = size;
+            tmp.height = size;
+            const tctx = tmp.getContext('2d');
+
+            // Dibujar imagen original
+            // Dibujar imagen con aspect ratio (fit)
+            const ratio = Math.min(size / img.width, size / img.height);
+            const w = img.width * ratio;
+            const h = img.height * ratio;
+            tctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+
+            // Rellenar de negro conservando solo el alfa (white → black)
+            tctx.globalCompositeOperation = 'source-in';
+            tctx.fillStyle = '#000000';
+            tctx.fillRect(0, 0, size, size);
+
+            ctx.drawImage(tmp, x - size / 2, y - size / 2, size, size);
         } else {
             // Fallback: símbolo Unicode
             ctx.fillStyle = '#000000';
@@ -159,11 +177,24 @@ export class CubeBuilder {
         const img = elementIcon ? await this._loadImage(elementIcon) : null;
 
         if (img) {
-            // Icono SVG a la izquierda + nombre del elemento a la derecha
+            // Icono a la izquierda (invertir blanco → negro) + nombre a la derecha
             const iconSize = 38;
             const iconX = 10;
             const iconY = (H - iconSize) / 2;
-            ctx.drawImage(img, iconX, iconY, iconSize, iconSize);
+
+            const tmp = document.createElement('canvas');
+            tmp.width = iconSize;
+            tmp.height = iconSize;
+            const tctx = tmp.getContext('2d');
+            tctx.drawImage(img, 0, 0, iconSize, iconSize);
+            tctx.globalCompositeOperation = 'source-in';
+            tctx.fillStyle = '#000000';
+            tctx.fillRect(0, 0, iconSize, iconSize);
+
+            const ratio = Math.min(iconSize / img.width, iconSize / img.height);
+            const w = img.width * ratio;
+            const h = img.height * ratio;
+            tctx.drawImage(img, (iconSize - w) / 2, (iconSize - h) / 2, w, h);
 
             // Texto: nombre del elemento
             const label = elementName || element;

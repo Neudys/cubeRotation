@@ -33,12 +33,12 @@ export class DataManager {
                         name: "Dai Mai",
                         position: [-1, 1, 1],
                         planet: "♃",
-                        planetIcon: "/icons/jupiter.svg",
+                        planetIcon: "/icons/jupiter.png",
                         planetName: "Júpiter",
                         number: "3",
                         element: "▽",
                         elementName: "Tierra",
-                        elementIcon: "/icons/element-down-line.svg",
+                        elementIcon: "/icons/element-down-line.png",
                         trigram: "䷝",
                         trigramName: "Fuego",
                         vessel: "Dai Mai",
@@ -49,12 +49,12 @@ export class DataManager {
                         name: "Du Mai",
                         position: [1, 1, 1],
                         planet: "☉",
-                        planetIcon: "/icons/sun.svg",
+                        planetIcon: "/icons/sun.png",
                         planetName: "Sol",
                         number: "5",
                         element: "△",
                         elementName: "Fuego",
-                        elementIcon: "/icons/element-up.svg",
+                        elementIcon: "/icons/element-up.png",
                         trigram: "䷀",
                         trigramName: "Cielo",
                         vessel: "Du Mai",
@@ -65,12 +65,12 @@ export class DataManager {
                         name: "Yang Wei Mai",
                         position: [1, 1, -1],
                         planet: "♂",
-                        planetIcon: "/icons/mars.svg",
+                        planetIcon: "/icons/mars.png",
                         planetName: "Marte",
                         number: "4",
                         element: "△",
                         elementName: "Aire",
-                        elementIcon: "/icons/element-up-line.svg",
+                        elementIcon: "/icons/element-up-line.png",
                         trigram: "䷹",
                         trigramName: "Lago",
                         vessel: "Yang Wei Mai",
@@ -81,12 +81,12 @@ export class DataManager {
                         name: "Yang Qiao Mai",
                         position: [-1, 1, -1],
                         planet: "☿",
-                        planetIcon: "/icons/mercury.svg",
+                        planetIcon: "/icons/mercury.png",
                         planetName: "Mercurio",
                         number: "7",
                         element: "▽",
                         elementName: "Agua",
-                        elementIcon: "/icons/element-down.svg",
+                        elementIcon: "/icons/element-down.png",
                         trigram: "䷲",
                         trigramName: "Trueno / Zhen",
                         vessel: "Yang Qiao Mai",
@@ -97,12 +97,12 @@ export class DataManager {
                         name: "Yin Wei Mai",
                         position: [-1, -1, 1],
                         planet: "♀",
-                        planetIcon: "/icons/venus.svg",
+                        planetIcon: "/icons/venus.png",
                         planetName: "Venus",
                         number: "6",
                         element: "▽",
                         elementName: "Tierra",
-                        elementIcon: "/icons/element-down-line.svg",
+                        elementIcon: "/icons/element-down-line.png",
                         trigram: "䷳",
                         trigramName: "Montaña / Gen",
                         vessel: "Yin Wei Mai",
@@ -113,48 +113,48 @@ export class DataManager {
                         name: "Yin Qiao Mai",
                         position: [1, -1, 1],
                         planet: "⊕",
-                        planetIcon: "/icons/earth.svg",
+                        planetIcon: "/icons/earth.png",
                         planetName: "Tierra",
                         number: "9",
                         element: "△",
-                        elementName: "Fuego alquímico",
-                        elementIcon: "/icons/element-up.svg",
+                        elementName: "Fuego",
+                        elementIcon: "/icons/element-up.png",
                         trigram: "䷸",
                         trigramName: "Viento / Xun",
                         vessel: "Yin Qiao Mai",
-                        data: { planeta: "Tierra ⊕", numero: "9", elemento: "Fuego alquímico △", trigrama: "䷸ Viento / Xun", vaso: "Yin Qiao Mai" }
+                        data: { planeta: "Tierra ⊕", numero: "9", elemento: "Fuego", trigrama: "䷸ Viento / Xun", vaso: "Yin Qiao Mai" }
                     },
                     {
                         id: 6,
                         name: "Chong Mai",
                         position: [1, -1, -1],
                         planet: "♄",
-                        planetIcon: "/icons/saturn.svg",
+                        planetIcon: "/icons/saturn.png",
                         planetName: "Saturno",
                         number: "2",
                         element: "△",
-                        elementName: "Aire alquímico",
-                        elementIcon: "/icons/element-up-line.svg",
+                        elementName: "Aire",
+                        elementIcon: "/icons/element-up-line.png",
                         trigram: "䷜",
                         trigramName: "Agua / Kan",
                         vessel: "Chong Mai",
-                        data: { planeta: "Saturno ♄", numero: "2", elemento: "Aire alquímico △", trigrama: "䷜ Agua / Kan", vaso: "Chong Mai" }
+                        data: { planeta: "Saturno ♄", numero: "2", elemento: "Aire", trigrama: "䷜ Agua / Kan", vaso: "Chong Mai" }
                     },
                     {
                         id: 7,
                         name: "Ren Mai",
                         position: [-1, -1, -1],
                         planet: "☽",
-                        planetIcon: "/icons/moon.svg",
+                        planetIcon: "/icons/moon.png",
                         planetName: "Luna",
                         number: "8",
                         element: "▽",
-                        elementName: "Agua alquímica",
-                        elementIcon: "/icons/element-down.svg",
+                        elementName: "Agua",
+                        elementIcon: "/icons/element-down.png",
                         trigram: "䷁",
                         trigramName: "Tierra / Kun",
                         vessel: "Ren Mai",
-                        data: { planeta: "Luna ☽", numero: "8", elemento: "Agua alquímica ▽", trigrama: "䷁ Tierra / Kun", vaso: "Ren Mai" }
+                        data: { planeta: "Luna ☽", numero: "8", elemento: "Agua", trigrama: "䷁ Tierra / Kun", vaso: "Ren Mai" }
                     }
                 ],
 
@@ -162,7 +162,7 @@ export class DataManager {
                     
                     {
                         id: 0, from: 4, to: 5,
-                        sign: "♐", signIcon: "/icons/sagittarius.svg", signName: "Sagitario",
+                        sign: "♐", signIcon: "/img/sagittarius.png", signName: "Sagitario",
                         vessel: "Shou Jue Yin",
                         trigram: "♐",
                         number: "8",
@@ -171,7 +171,7 @@ export class DataManager {
                     
                     {
                         id: 1, from: 5, to: 6,
-                        sign: "♒", signIcon: "/icons/aquarius.svg", signName: "Acuario",
+                        sign: "♒", signIcon: "/img/aquarius.png", signName: "Acuario",
                         vessel: "Zu Shao Yang",
                         trigram: "♒",
                         number: "88→16→7",
@@ -180,7 +180,7 @@ export class DataManager {
                    
                     {
                         id: 2, from: 4, to: 7,
-                        sign: "♏", signIcon: "/icons/scorpio.svg", signName: "Escorpio",
+                        sign: "♏", signIcon: "/img/scorpio.png", signName: "Escorpio",
                         vessel: "Zu Shao Yin",
                         trigram: "♏",
                         number: "55→10→1",
@@ -188,7 +188,7 @@ export class DataManager {
                     },
                     {
                         id: 3, from: 6, to: 7,
-                        sign: "♑", signIcon: "/icons/capricorn.svg", signName: "Capricornio",
+                        sign: "♑", signIcon: "/img/capricorn.png", signName: "Capricornio",
                         vessel: "Shou Shao Yang",
                         trigram: "♑",
                         number: "27→9",
@@ -196,7 +196,7 @@ export class DataManager {
                     },
                     {
                         id: 4, from: 1, to: 5,
-                        sign: "♈", signIcon: "/icons/aries.svg", signName: "Aries",
+                        sign: "♈", signIcon: "/img/aries.png", signName: "Aries",
                         vessel: "Shou Tai Yin",
                         trigram: "♈",
                         number: "9",
@@ -204,7 +204,7 @@ export class DataManager {
                     },
                     {
                         id: 5, from: 0, to: 4,
-                        sign: "♎", signIcon: "/icons/libra.svg", signName: "Libra",
+                        sign: "♎", signIcon: "/img/libra.png", signName: "Libra",
                         vessel: "Zu Tai Yang",
                         trigram: "♎",
                         number: "72→9",
@@ -212,7 +212,7 @@ export class DataManager {
                     },
                     {
                         id: 6, from: 2, to: 6,
-                        sign: "♍", signIcon: "/icons/virgo.svg", signName: "Virgo",
+                        sign: "♍", signIcon: "/img/virgo.png", signName: "Virgo",
                         vessel: "Shou Tai Yang",
                         trigram: "♍",
                         number: "24→6",
@@ -221,7 +221,7 @@ export class DataManager {
                     
                     {
                         id: 7, from: 3, to: 7,
-                        sign: "♓", signIcon: "/icons/pisces.svg", signName: "Piscis",
+                        sign: "♓", signIcon: "/img/pisces.png", signName: "Piscis",
                         vessel: "Zu Jue Yin",
                         trigram: "♓",
                         number: "40→4",
@@ -230,7 +230,7 @@ export class DataManager {
                     
                     {
                         id: 8, from: 0, to: 1,
-                        sign: "♌", signIcon: "/icons/leo.svg", signName: "Leo",
+                        sign: "♌", signIcon: "/img/leo.png", signName: "Leo",
                         vessel: "Shou Shao Yin",
                         trigram: "♌",
                         number: "11→2",
@@ -239,7 +239,7 @@ export class DataManager {
                    
                     {
                         id: 9, from: 1, to: 2,
-                        sign: "♊", signIcon: "/icons/gemini.svg", signName: "Géminis",
+                        sign: "♊", signIcon: "/img/gemini.png", signName: "Géminis",
                         vessel: "Zu Yang Ming",
                         trigram: "♊",
                         number: "64",
@@ -248,7 +248,7 @@ export class DataManager {
                     
                     {
                         id: 10, from: 0, to: 3,
-                        sign: "♋", signIcon: "/icons/cancer.svg", signName: "Cáncer",
+                        sign: "♋", signIcon: "/img/cancer.png", signName: "Cáncer",
                         vessel: "Zu Tai Yin",
                         trigram: "♋",
                         number: "45→9",
@@ -257,7 +257,7 @@ export class DataManager {
                    
                     {
                         id: 11, from: 2, to: 3,
-                        sign: "♉", signIcon: "/icons/taurus.svg", signName: "Tauro",
+                        sign: "♉", signIcon: "/img/taurus.png", signName: "Tauro",
                         vessel: "Shou Yang Ming",
                         trigram: "♉",
                         number: "33",

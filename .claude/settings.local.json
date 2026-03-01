@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -h \"^<svg\" \"c:/Users/tejad/Documents/FIVEER/CUBE ROTATION/PROYECT/public/icons/\"*.svg)"
+    ]
+  }
+}
