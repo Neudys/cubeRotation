@@ -72,28 +72,35 @@ export class CubeBuilder {
         return sprite;
     }
 
-    // ─── Dibuja icono SVG en canvas, con fallback a emoji ────────────────────
+    // ─── Dibuja icono PNG (blanco sobre negro) en canvas ───────────────────
+    // Convierte: blanco→negro, negro→transparente (usando brillo como alfa)
     async _drawIcon(ctx, iconUrl, fallbackEmoji, x, y, size) {
         const img = iconUrl ? await this._loadImage(iconUrl) : null;
 
         if (img) {
-            // Dibujar en canvas temporal e invertir blanco → negro
             const tmp = document.createElement('canvas');
             tmp.width = size;
             tmp.height = size;
             const tctx = tmp.getContext('2d');
 
-            // Dibujar imagen original
             // Dibujar imagen con aspect ratio (fit)
             const ratio = Math.min(size / img.width, size / img.height);
             const w = img.width * ratio;
             const h = img.height * ratio;
             tctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
 
-            // Rellenar de negro conservando solo el alfa (white → black)
-            tctx.globalCompositeOperation = 'source-in';
-            tctx.fillStyle = '#000000';
-            tctx.fillRect(0, 0, size, size);
+            // Pixel-level: brillo → alfa, color → negro
+            const imageData = tctx.getImageData(0, 0, size, size);
+            const d = imageData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+                const alpha = d[i + 3] > 0 ? brightness : 0;
+                d[i] = 0;       // R → negro
+                d[i + 1] = 0;   // G → negro
+                d[i + 2] = 0;   // B → negro
+                d[i + 3] = alpha; // alfa = brillo original
+            }
+            tctx.putImageData(imageData, 0, 0);
 
             ctx.drawImage(tmp, x - size / 2, y - size / 2, size, size);
         } else {
@@ -108,7 +115,7 @@ export class CubeBuilder {
 
     // ─── Círculo del vértice con icono planetario ─────────────────────────────
     async createVertexCircleAsync(planet, planetIcon) {
-        const size = 128;
+        const size = 512;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
@@ -116,48 +123,70 @@ export class CubeBuilder {
 
         // Fondo círculo blanco
         ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+        ctx.arc(size / 2, size / 2, size / 2 - 8, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255,255,255,0.98)';
         ctx.fill();
         ctx.strokeStyle = '#0a1520';
-        ctx.lineWidth = 6;
+        ctx.lineWidth = 12;
         ctx.stroke();
 
         // Icono SVG o emoji fallback
-        await this._drawIcon(ctx, planetIcon, planet, size / 2, size / 2, 72);
+        await this._drawIcon(ctx, planetIcon, planet, size / 2, size / 2, 300);
 
         return this.makeSprite(canvas, 0.28, 0.28);
     }
 
     // ─── Etiqueta satélite de texto (número, trigrama, vaso) ─────────────────
     createSatelliteLabel(text, color) {
+        // Medir ancho del texto primero
+        const measure = document.createElement('canvas').getContext('2d');
+        measure.font = '900 56px "Georgia", serif';
+        const textWidth = measure.measureText(text).width;
+        const W = Math.max(256, Math.ceil(textWidth + 80));
+        const H = 128;
+
         const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 64;
+        canvas.width = W;
+        canvas.height = H;
         const ctx = canvas.getContext('2d');
 
-        ctx.clearRect(0, 0, 256, 64);
+        ctx.clearRect(0, 0, W, H);
         ctx.fillStyle = 'rgba(255,255,255,0.97)';
         ctx.beginPath();
-        ctx.roundRect(2, 4, 252, 56, 8);
+        ctx.roundRect(4, 8, W - 8, H - 16, 16);
         ctx.fill();
         ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         ctx.fillStyle = color;
-        ctx.font = '900 28px "Georgia", serif';
+        ctx.font = '900 56px "Georgia", serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(text, 128, 34);
+        ctx.fillText(text, W / 2, 68);
 
-        return this.makeSprite(canvas, 0.50, 0.125);
+        // Escalar sprite proporcionalmente al ancho
+        const spriteW = 0.50 * (W / 512);
+        return this.makeSprite(canvas, spriteW, 0.125);
     }
 
     // ─── Etiqueta izquierda: icono SVG de elemento + nombre ──────────────────
     async createElementLabelAsync(element, elementName, elementIcon) {
-        const W = 256;
-        const H = 64;
+        const H = 128;
+        const img = elementIcon ? await this._loadImage(elementIcon) : null;
+
+        // Medir ancho del texto para ajustar el canvas
+        const measure = document.createElement('canvas').getContext('2d');
+        measure.font = '700 36px "Georgia", serif';
+        const label = elementName || element;
+        const textWidth = measure.measureText(label).width;
+
+        const iconSize = 76;
+        const padding = 40;
+        const W = img
+            ? Math.max(256, Math.ceil(padding + iconSize + 16 + textWidth + padding))
+            : Math.max(256, Math.ceil(textWidth + 80));
+
         const canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
@@ -165,121 +194,119 @@ export class CubeBuilder {
 
         ctx.clearRect(0, 0, W, H);
 
-        // Fondo blanco redondeado — igual que los otros satélites
+        // Fondo blanco redondeado
         ctx.fillStyle = 'rgba(255,255,255,0.97)';
         ctx.beginPath();
-        ctx.roundRect(2, 4, W - 4, H - 8, 8);
+        ctx.roundRect(4, 8, W - 8, H - 16, 16);
         ctx.fill();
         ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        const img = elementIcon ? await this._loadImage(elementIcon) : null;
-
         if (img) {
-            // Icono a la izquierda (invertir blanco → negro) + nombre a la derecha
-            const iconSize = 38;
-            const iconX = 10;
+            const iconX = 20;
             const iconY = (H - iconSize) / 2;
 
             const tmp = document.createElement('canvas');
             tmp.width = iconSize;
             tmp.height = iconSize;
             const tctx = tmp.getContext('2d');
-            tctx.drawImage(img, 0, 0, iconSize, iconSize);
-            tctx.globalCompositeOperation = 'source-in';
-            tctx.fillStyle = '#000000';
-            tctx.fillRect(0, 0, iconSize, iconSize);
 
             const ratio = Math.min(iconSize / img.width, iconSize / img.height);
             const w = img.width * ratio;
             const h = img.height * ratio;
             tctx.drawImage(img, (iconSize - w) / 2, (iconSize - h) / 2, w, h);
 
-            // Texto: nombre del elemento
-            const label = elementName || element;
+            // Pixel-level: brillo → alfa, color → negro
+            const imageData = tctx.getImageData(0, 0, iconSize, iconSize);
+            const d = imageData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const brightness = (d[i] + d[i + 1] + d[i + 2]) / 3;
+                const alpha = d[i + 3] > 0 ? brightness : 0;
+                d[i] = 0;
+                d[i + 1] = 0;
+                d[i + 2] = 0;
+                d[i + 3] = alpha;
+            }
+            tctx.putImageData(imageData, 0, 0);
+
+            ctx.drawImage(tmp, iconX, iconY, iconSize, iconSize);
+
             ctx.fillStyle = '#0a1a3a';
-            ctx.font = '700 18px "Georgia", serif';
+            ctx.font = '700 36px "Georgia", serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(label, iconX + iconSize + 8, H / 2 + 2);
+            ctx.fillText(label, iconX + iconSize + 16, H / 2 + 4);
         } else {
             // Sin SVG: símbolo + nombre
             ctx.fillStyle = '#2a4a2a';
-            ctx.font = '900 22px serif';
+            ctx.font = '900 44px serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(`${element} ${elementName || ''}`, W / 2, H / 2 + 2);
+            ctx.fillText(`${element} ${elementName || ''}`, W / 2, H / 2 + 4);
         }
 
-        return this.makeSprite(canvas, 0.55, 0.125);
+        const spriteW = 0.55 * (W / 512);
+        return this.makeSprite(canvas, spriteW, 0.125);
     }
 
-    // ─── Etiqueta de arista: icono zodiacal prominente ────────────────────────
-    async createEdgeLabelAsync(sign, signIcon, number, canal) {
-        const W = 220;
-        const H = 220;
+    // ─── Icono zodiacal redondo (mismo estilo que los planetas) ─────────────
+    async createEdgeCircleAsync(sign, signIcon) {
+        const size = 512;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Fondo círculo blanco — idéntico al de los planetas
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.98)';
+        ctx.fill();
+        ctx.strokeStyle = '#1a3a6a';
+        ctx.lineWidth = 12;
+        ctx.stroke();
+
+        // Icono zodiacal SVG o emoji fallback
+        await this._drawIcon(ctx, signIcon, sign, size / 2, size / 2, 300);
+
+        return this.makeSprite(canvas, 0.28, 0.28);
+    }
+
+    // ─── Etiqueta satélite para datos de arista (canal + número) ─────────────
+    createEdgeInfoLabel(canal, number) {
+        const H = 128;
+        const canalText = canal && canal.length > 20 ? canal.slice(0, 19) + '…' : (canal || '');
+        const label = number ? `${canalText}  ·  ${number}` : canalText;
+
+        // Medir ancho
+        const measure = document.createElement('canvas').getContext('2d');
+        measure.font = '700 40px "Georgia", serif';
+        const textWidth = measure.measureText(label).width;
+        const W = Math.max(256, Math.ceil(textWidth + 80));
+
         const canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, W, H);
 
-        const cx = W / 2;
-        const boxW = 180;
-        const boxH = 104;
-        const boxX = (W - boxW) / 2;
-        const boxY = 6;
-        const radius = 18;
-
-        // ── Rectángulo redondeado para el signo (igual estética que satélites) ──
-        ctx.beginPath();
-        ctx.roundRect(boxX, boxY, boxW, boxH, radius);
         ctx.fillStyle = 'rgba(255,255,255,0.97)';
-        ctx.fill();
-        ctx.strokeStyle = '#1a3a6a';
-        ctx.lineWidth = 5;
-        ctx.stroke();
-
-        // Icono zodiacal centrado en la caja
-        const iconCy = boxY + boxH / 2;
-        await this._drawIcon(ctx, signIcon, sign, cx, iconCy, 78);
-
-        // ── Caja blanca para el canal ─────────────────────────────────────────
-        const row1Y = boxY + boxH + 10;
-        const rowH = 34;
         ctx.beginPath();
-        ctx.roundRect(boxX, row1Y, boxW, rowH, 8);
-        ctx.fillStyle = 'rgba(255,255,255,0.97)';
+        ctx.roundRect(4, 8, W - 8, H - 16, 16);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         ctx.fillStyle = '#0a1520';
-        ctx.font = 'bold 17px "Georgia", serif';
+        ctx.font = '700 40px "Georgia", serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const canalText = canal && canal.length > 18 ? canal.slice(0, 17) + '…' : (canal || '');
-        ctx.fillText(canalText, cx, row1Y + rowH / 2);
+        ctx.fillText(label, W / 2, H / 2 + 4);
 
-        // ── Caja blanca para el número ────────────────────────────────────────
-        const row2Y = row1Y + rowH + 6;
-        ctx.beginPath();
-        ctx.roundRect(boxX, row2Y, boxW, rowH, 8);
-        ctx.fillStyle = 'rgba(255,255,255,0.97)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        ctx.fillStyle = '#6b0a3a';
-        ctx.font = '700 16px "Georgia", serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(number || '', cx, row2Y + rowH / 2);
-
-        return this.makeSprite(canvas, 0.58, 0.58);
+        const spriteW = 0.55 * (W / 512);
+        return this.makeSprite(canvas, spriteW, 0.125);
     }
 
     // ─── Crear vértices ───────────────────────────────────────────────────────
@@ -424,20 +451,23 @@ export class CubeBuilder {
             this.cubeGroup.add(tube);
             this.cubeGroup.add(cylinder);
 
-            // Etiqueta con icono zodiacal (async)
+            // Icono zodiacal redondo centrado en la arista (sobre la línea)
             if (data.sign) {
                 const mid = from3.clone().add(to3).multiplyScalar(0.5);
-                this.createEdgeLabelAsync(
-                    data.sign,
-                    data.signIcon,
-                    data.number,
-                    data.vessel
-                ).then(edgeLabel => {
-                    edgeLabel.position.copy(mid);
-                    edgeLabel.position.y += 0.20;
-                    this.labels.push(edgeLabel);
-                    this.cubeGroup.add(edgeLabel);
+
+                // Círculo redondo con signo zodiacal — directamente sobre la arista
+                this.createEdgeCircleAsync(data.sign, data.signIcon).then(circle => {
+                    circle.position.copy(mid);
+                    this.labels.push(circle);
+                    this.cubeGroup.add(circle);
                 });
+
+                // Etiqueta info (canal + número) debajo del círculo
+                const infoLabel = this.createEdgeInfoLabel(data.vessel, data.number);
+                infoLabel.position.copy(mid);
+                infoLabel.position.y -= 0.22;
+                this.labels.push(infoLabel);
+                this.cubeGroup.add(infoLabel);
             }
         });
     }

@@ -4,39 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Cubo: Fuerzas y Meridianos</title>
   </head>
   <body>
         <div id="canvas-container"></div>
-    
-    <div id="info-panel">
-        <h2>Cubo Interactivo 3D</h2>
-        <p><strong>Instrucciones:</strong></p>
-        <p>1. Haz clic en un vértice (esfera)</p>
-        <p>2. Se mostrarán sus 3 conexiones</p>
-        <p>3. Haz clic en una conexión para ver datos</p>
-        <div class="status" id="status">Estado: Esperando interacción...</div>
-        <div id="data-display"></div>
-    </div>
 
-    <div class="legend">
-        <h3>Leyenda</h3>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ff6b6b;"></div>
-            <span>Vértice normal</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ffd93d;"></div>
-            <span>Vértice seleccionado</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #6bcf7f;"></div>
-            <span>Conexión activa</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #4ecdc4;"></div>
-            <span>Arista normal</span>
-        </div>
+    <!-- Panel de datos (se muestra al hacer clic en vértices/aristas) -->
+    <div id="data-panel">
+        <div class="status" id="status">Haz clic en un vértice para explorar sus conexiones</div>
+        <div id="data-display"></div>
     </div>
 
     <div class="controls">

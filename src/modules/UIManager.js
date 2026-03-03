@@ -10,38 +10,9 @@ export class UIManager {
         };
 
         this.validateElements();
-        this.applyUIChanges();
     }
 
-    // ─── Boot-time UI adjustments ────────────────────────────────────────────
 
-    applyUIChanges() {
-        // 1. Cambiar título
-        const titleEl =
-            document.querySelector('h1') ||
-            document.querySelector('.app-title') ||
-            document.querySelector('[data-title]') ||
-            document.getElementById('app-title');
-        if (titleEl) titleEl.textContent = 'Cubo: Fuerzas y Meridianos';
-
-        // Also try updating <title> tag in head
-        if (document.title) document.title = 'Cubo: Fuerzas y Meridianos';
-
-        // 2. Ocultar bloque de instrucciones
-        const instrEl =
-            document.getElementById('instructions') ||
-            document.querySelector('.instructions') ||
-            document.querySelector('[data-section="instructions"]');
-        if (instrEl) instrEl.style.display = 'none';
-
-        // 3. Ocultar leyenda lateral derecha
-        const legendEl =
-            document.getElementById('legend') ||
-            document.querySelector('.legend') ||
-            document.querySelector('[data-section="legend"]') ||
-            document.querySelector('.legend-panel');
-        if (legendEl) legendEl.style.display = 'none';
-    }
 
     validateElements() {
         Object.entries(this.elements).forEach(([key, element]) => {
